@@ -13,18 +13,18 @@ public class Grafo {
     public int n;
 
     public Grafo (String path) throws FileNotFoundException {
+        _inicializar(path);
+    }
+
+    // 1
+    private void _inicializar (String path) throws FileNotFoundException {
         Scanner scan = new Scanner(new File(path));
         this.n       = scan.nextInt();
         this.matriz  = new int[n][n];
         this.listas  = new ArrayList<LinkedList<Integer>>(n);
-        _lerArquivo(scan);
-        scan.close();
-    }
-
-    // 1
-    private void _lerArquivo (Scanner scan) {
+        
         int i, j, k;
-
+        
         i = 0;
         while(scan.hasNextLine()) {
             listas.add(i, new LinkedList<Integer>());
@@ -32,10 +32,11 @@ public class Grafo {
                 k = scan.nextInt();
                 matriz[i][j] = k;
                 if (k != 0)
-                    listas.get(i).add(j+1);
+                listas.get(i).add(j+1);
             }
             i++;
         }
+        scan.close();
     }
 
     //2
