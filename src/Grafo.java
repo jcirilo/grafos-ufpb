@@ -82,18 +82,6 @@ public class Grafo {
     }
 
     // 4
-    public int[] vizinhancaAberta (int v) {
-        LinkedList<Integer> aux = listas.get(v-1);
-
-        int[] vizinhanca = new int[aux.size()];
-        int i = 0;
-        
-        for (int x : aux)
-            vizinhanca[i++] = x;
-        
-        return vizinhanca;
-    }
-
     public LinkedList<Integer> vAberta (int v) {
         if (v < 1) 
             return null;
@@ -103,21 +91,9 @@ public class Grafo {
     public LinkedList<Integer> vFechada (int v) {
         if (v < 1)
             return null;
-        LinkedList<Integer> aux = listas.get(-1);
+        LinkedList<Integer> aux = listas.get(v-1);
         aux.add(v-1, v);
         return aux;
-    }
-
-    public int[] vizinhancaFechada (int v) {
-        LinkedList<Integer> aux = listas.get(v-1);
-        
-        int[] vizinhanca = new int[aux.size()+1];
-        int i = 0;
-        vizinhanca[i++] = v;        
-        for (int x : aux)
-            vizinhanca[i++] = x;
-        
-        return vizinhanca;
     }
 
     public int grau (int v) {
@@ -249,7 +225,7 @@ public class Grafo {
 
         return true;
     }
-    
+
     // 12
     public boolean ehCaminho (int[] n) {
         
