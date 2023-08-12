@@ -41,26 +41,30 @@ public class Grafo {
 
     //2
     public int dMax () {
-        int temp, max;
-        Iterator<LinkedList<Integer>> it = listas.iterator();
-        
+        if (n == 0)
+            return 0;
+
+        int i, temp, max;
+
         max = listas.get(0).size();
-        while (it.hasNext()) {
-            temp = it.next().size();
-            max = (temp > max) ? temp : max;
+        for (i = 1; i < n; i++) {
+            temp = listas.get(i).size();
+            max = temp > max ? temp : max;
         }
 
         return max;
     }
 
     public int dMin () {
-        int temp, min;
-        Iterator<LinkedList<Integer>> it = listas.iterator();
-        
+        if (n == 0)
+            return 0;
+            
+        int i, temp, min;
+
         min = listas.get(0).size();
-        while (it.hasNext()) {
-            temp = it.next().size();
-            min = (temp < min) ? temp : min;
+        for (i = 1; i < n; i++) {
+            temp = listas.get(i).size();
+            min = temp < min ? temp : min;
         }
 
         return min;
@@ -83,39 +87,35 @@ public class Grafo {
     }
 
     // 4
+    public int grau (int v) {
+        if (v < 1 || v > n || listas.size() == 0)
+            return 0;
+
+        return listas.get(v-1).size();
+    }
+
     public LinkedList<Integer> vAberta (int v) {
-        if (v < 1) 
+        if (v < 1 || v > n)
             return null;
         return listas.get(v-1);
     }
 
     public LinkedList<Integer> vFechada (int v) {
-        if (v < 1)
+        if (v < 1 || v > n)
             return null;
+
         LinkedList<Integer> aux = listas.get(v-1);
         aux.add(v-1, v);
-        return aux;
-    }
 
-    public int grau (int v) {
-        v -= 1;
-        if (v > n)
-            return -1;
-        LinkedList<Integer> l = listas.get(v);
-        if (l == null)
-            return -1;
-        return l.size();
+        return aux;
     }
 
     // 5
     public boolean ehAdjacente (int u, int v) {
-        u -= 1;
-        v -= 1;
-        
-        if (u < 0 || v < 0 || u > n || v > n)
+        if (u < 1 || v < 1 || u > n || v > n)
             return false;
         
-        return (matriz[u][v] == 1);
+        return (matriz[u-1][v-1] == 1);
     }
 
     // 6
@@ -228,8 +228,7 @@ public class Grafo {
     }
 
     // 12
-    public boolean ehCaminho (int[] n) {
-        
+    public boolean ehCaminho (int[] n) {  
         if (n.length <= 1)
             return true;
 
@@ -245,6 +244,31 @@ public class Grafo {
                 if (n[j++] == k)
                     return false;
         }
+
+        return ehPasseio(n);
+    }
+
+    //13
+    public boolean ehCiclo (int[] n) {
+        if (n.length <= 1)
+            return true;
+
+        int i, j, k;
+        i=0;
+        while (i < n.length-1) {
+            k = n[i];
+            j = i+1;
+            i = j;
+
+            while (j < n.length)
+                if (n[j++] == k)
+                    return false;
+        }
+        return ehPasseio(n) && n[0] == n[n.length-1];
+    }
+
+    //14
+    public boolean ehTrilha (int[] n) {
 
         return ehPasseio(n);
     }
