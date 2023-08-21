@@ -12,6 +12,14 @@ public class Grafo {
     public ArrayList<LinkedList<Integer>> listas;
     public int n;
 
+    public Grafo (int n) {
+        this.n = n;
+        this.matriz = new int[n][n];
+        this.listas = new ArrayList<LinkedList<Integer>>(n);
+        for (int i = 0; i < n; i++)
+            listas.add(i, new LinkedList<Integer>());
+    }
+
     public Grafo (String path) throws FileNotFoundException {
         _inicializar(path);
     }
@@ -24,18 +32,17 @@ public class Grafo {
         this.listas  = new ArrayList<LinkedList<Integer>>(n);
         
         int i, j, k;
-        
-        i = 0;
-        while(scan.hasNextLine()) {
+
+        for (i = 0; i < n; i++) {
             listas.add(i, new LinkedList<Integer>());
             for (j = 0; j < n; j++) {
                 k = scan.nextInt();
                 matriz[i][j] = k;
-                if (k != 0)
-                listas.get(i).add(j+1);
+                if (k != 0) 
+                    listas.get(i).add(j+1);
             }
-            i++;
         }
+
         scan.close();
     }
 
@@ -87,48 +94,50 @@ public class Grafo {
     }
 
     // 4
-    public int grau (int v) {
-        if (v < 1 || v > n || listas.size() == 0)
+    public int grau (int n) {
+        if (n < 1 || n > this.n || listas.size() == 0)
             return 0;
 
-        return listas.get(v-1).size();
+        return listas.get(n-1).size();
     }
 
-    public LinkedList<Integer> vAberta (int v) {
-        if (v < 1 || v > n)
+    public LinkedList<Integer> vAberta (int n) {
+        if (n < 1 || n > this.n) 
             return null;
-        return listas.get(v-1);
+        
+        return listas.get(n-1);
     }
 
-    public LinkedList<Integer> vFechada (int v) {
-        if (v < 1 || v > n)
+    public LinkedList<Integer> vFechada (int n) {
+        if (n < 1 || n > this.n)
             return null;
 
-        LinkedList<Integer> aux = listas.get(v-1);
-        aux.add(v-1, v);
+        LinkedList<Integer> aux = listas.get(n-1);
+        aux.add(n-1, n);
 
         return aux;
     }
 
     // 5
-    public boolean ehAdjacente (int u, int v) {
-        if (u < 1 || v < 1 || u > n || v > n)
+    public boolean ehAdjacente (int a, int b) {
+        if (a < 1 || b < 1 || a > n || b > n)
             return false;
         
-        return (matriz[u-1][v-1] == 1);
+        return (matriz[a-1][b-1] == 1);
     }
 
     // 6
     public int ehRegular1 () {
-        int i, v, k;
+        int i, u, v;
         
-        v = listas.get(0).size();
+        u = listas.get(0).size();
         for (i = 1; i < n; i++) {
-            k = listas.get(i).size();
-            if (k != v)
+            v = listas.get(i).size();
+            if (v != u)
                 return -1;
         }
-        return v;
+
+        return u;
     }
 
     public int ehRegular2 () {
@@ -139,7 +148,7 @@ public class Grafo {
     }
 
     // 7
-    public boolean completude () {
+    public boolean ehCompleto () {
         Iterator<LinkedList<Integer>> it = listas.iterator();
         int k = (n*(n-1))/2;
         int count = 0;
@@ -187,90 +196,126 @@ public class Grafo {
     
 
     // 10
-    public boolean ehSub (int[] n, Aresta[] m) {
+    public boolean ehSub (int[] n, int[] m) {
         if (n.length > this.n)
             return false;
-
-        int i, a, b;
-        for (i = 0; i < m.length; i++) {
-            a = m[i].a;
-            b = m[i].b;
-
-            if (a > this.n || b > this.n)
+        
+        for (int v : n)
+            if (v > this.n)
                 return false;
-            if (a-1 < 0 || b-1 < 0)
-                return false;
-            if (matriz[a-1][b-1] == 0)
-                return false;
-        }
 
+        for (int i = 0; i < n.length-1; i++)
+            if (!ehAdjacente(n[i], n[++i]))
+                return false;
+        
         return true;
     }
 
     //11
-    public boolean ehPasseio (int[] n) {
-        if (n.length <= 1)
-            return true;
-            
-        int i, a, b;
-        for (i = 0; i < n.length-1; i++) {
-            a = n[i];
-            b = n[i+1];
-
-            if (a-1 < 0 || b-1 < 0)
+    public boolean ehPasseio (int[] n) {            
+        for (int i = 0; i < n.length-1; i++)
+            if (!ehAdjacente(n[i], n[i+1]))
                 return false;
-
-            if (matriz[a-1][b-1] != 1)
-                return false;
-        }
 
         return true;
     }
 
     // 12
-    public boolean ehCaminho (int[] n) {  
-        if (n.length <= 1)
-            return true;
+    public boolean ehCaminho (int[] n) { 
+        if (n[0] == n[n.length-1])
+            return false;
 
+        if (!ehPasseio(n))
+            return false;
+        
         int i, j, k;
-        i = 0;
-
-        while (i < n.length) {
-            k = n[i];
+        i = 1;
+        while (i < n.length-2) {
             j = i+1;
+            k = n[i];
             i = j;
-
-            while (j < n.length)
-                if (n[j++] == k)
+            while (j < n.length-1)
+                if (k == n[j++])
                     return false;
         }
 
-        return ehPasseio(n);
+        return true;
     }
 
     //13
     public boolean ehCiclo (int[] n) {
-        if (n.length <= 1)
-            return true;
+        if (n[0] != n[n.length-1])
+            return false;
+
+        if (!ehPasseio(n))
+            return false;
 
         int i, j, k;
-        i=0;
-        while (i < n.length-1) {
-            k = n[i];
+        
+        i = 1;
+        while (i < n.length-2) {
             j = i+1;
+            k = n[i];
             i = j;
-
-            while (j < n.length)
-                if (n[j++] == k)
+            while (j < n.length-1)
+                if (k == n[j++])
                     return false;
         }
-        return ehPasseio(n) && n[0] == n[n.length-1];
+
+        return true;
     }
 
     //14
     public boolean ehTrilha (int[] n) {
+        if (!ehPasseio(n))
+            return false;
 
-        return ehPasseio(n);
+        return true;
+    }
+
+    // 15
+    public boolean ehClique (int[] n) {
+        int i, j, a, b;
+        i = 0;
+        while (i < n.length-1 ) {
+            a = n[i];
+            j = i+1;
+            i = j;
+            while (j < n.length) {
+                b = n[j];
+                if (!ehAdjacente(a, b))
+                    return false;
+                j++;
+            }
+        }
+        return true;
+    }
+
+    // 16
+    public boolean ehCliqueMaximal (int[] n) {
+        //int i, j, k;
+
+        return true;
+    }
+
+    //17
+    public Grafo complemento (Grafo g) {
+        Grafo aux = new Grafo(g.n);
+
+        for (int i = 0; i < g.n; i++) {
+            for (int j = 0; j < g.n; j++) {
+                aux.matriz[i][j] = (1 - g.matriz[i][j]);
+                if(aux.matriz[i][j] == 1)
+                    aux.listas.get(i).add(j+1);
+            }
+        }    
+        return aux;
+    }
+
+    //18
+    public boolean ehIndependente (int[] n) {
+        Grafo gInverso = complemento(this);
+        return gInverso.ehClique(n);
     }
 
     // AUXILIARES
@@ -297,4 +342,5 @@ public class Grafo {
         }
         return out;
     }
+
 }
