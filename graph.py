@@ -1,9 +1,6 @@
-import re # criação de expressão regular 
-          # para leitura do próximo inteiro
-          # no arquivo de entrada
+from re import finditer 
 
 # Grafo com funções básicas
-
 class Graph:
     def __init__(self, path=None, data=None):
         self.n = 0
@@ -29,7 +26,7 @@ class Graph:
         for i in range(self.n):
             self.adj_list.append(list())
             self.adj_matrix.append(list())
-            int_iter = re.finditer('[\d]', next(file_iter))
+            int_iter = finditer('[\d]', next(file_iter))
             for j in range(self.n):
                 is_adj = int(next(int_iter).group())
                 self.adj_matrix[i].append(is_adj)
