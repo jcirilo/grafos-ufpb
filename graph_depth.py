@@ -2,7 +2,7 @@ from graph import Graph
 from os.path import join
 
 # Grafo com busca em profundidade
-class DepthGraph(Graph):
+class GraphDepth(Graph):
     def __init__(self, path=None, data=None):
         super().__init__(path, data)
         self.t = 0
@@ -17,7 +17,7 @@ class DepthGraph(Graph):
             self.parent.append(None)
             self.colored_edges.append(list())
 
-    def depth_search(self, v):
+    def search(self, v):
         self.t = 0
         for i in range(self.n):
             self.pe[i] = 0
@@ -26,10 +26,10 @@ class DepthGraph(Graph):
         for i in range(self.n):
             for j in range(self.n):
                 self.colored_edges[i].append(0)
-        self.__search__(v)
+        self.__depth_search__(v)
         return self.colored_edges
 
-    def __search__(self, v):
+    def __depth_search__(self, v):
         self.t += 1
         self.pe[v] = self.t
         for w in self.opn_ngbhood(v):

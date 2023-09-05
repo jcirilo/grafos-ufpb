@@ -1,6 +1,6 @@
 from graph import Graph
 
-class LargeGraph(Graph):
+class GraphLarge(Graph):
     def __init__(self, path=None, data=None):
         super().__init__(path, data)
         self.queue = list()
@@ -16,7 +16,7 @@ class LargeGraph(Graph):
             self.parent.append(None)
             self.colored_edges.append(list())
 
-    def large_search(self, v):
+    def search(self, v):
         self.t = 0
         self.queue.clear()
         for i in range(self.n):
@@ -30,10 +30,10 @@ class LargeGraph(Graph):
             self.l[v] = self.t
             self.node_level[v] = 0
             self.queue.append(v)
-            self.__search__()
+            self.__large_search__()
         return self.colored_edges
 
-    def __search__(self):
+    def __large_search__(self):
         while len(self.queue) != 0:
             v = self.queue.pop(0)
             for w in self.opn_ngbhood(v):
