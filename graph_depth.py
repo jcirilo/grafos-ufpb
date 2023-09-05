@@ -47,12 +47,3 @@ class DepthGraph(Graph):
             self.colored_edges[v][w] = color
         else:
             self.colored_edges[w][v] = color
-
-g = DepthGraph('in/graph_1')
-s = g.depth_search(0)
-
-for i in range(len(s)):
-    for j in range(len(s[i])):
-        color_id = s[i][j] 
-        if color_id:
-            print(i+1,j+1,g.color_palette[color_id])

@@ -57,13 +57,3 @@ class LargeGraph(Graph):
             self.colored_edges[v][w] = color
         else:
             self.colored_edges[w][v] = color
-
-g = LargeGraph('in\graph_3')
-s = g.largue_search(0)
-
-for i in range(len(s)):
-    for j in range(len(s[i])):
-        color_id = s[i][j]
-        if color_id:
-            print(f"{i+1},{j+1},false,'{g.color_palette[color_id]}'")
-
