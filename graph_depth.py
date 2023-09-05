@@ -1,5 +1,5 @@
 from graph import Graph
-from edge import ColoredEdge
+from os.path import join
 
 # Grafo com busca em profundidade
 class DepthGraph(Graph):
@@ -9,12 +9,13 @@ class DepthGraph(Graph):
         self.pe = list()
         self.ps = list()
         self.parent = list()
-        self.edges = list()
+        self.color_palette = ['0,0,0', '0,0,255', '255,0,0', '0,255,0', '255,255,0']
+        self.colored_edges = list()
         for i in range(self.n):
             self.pe.append(0)
             self.ps.append(0)
             self.parent.append(None)
-            self.edges.append(list())
+            self.colored_edges.append(list())
 
     def depth_search(self, v):
         self.t = 0
@@ -22,33 +23,36 @@ class DepthGraph(Graph):
             self.pe[i] = 0
             self.ps[i] = 0
             self.parent[i] = None
-            self.edges[i].clear()
-        self.p(v)
-        self.write_out_file()
+        for i in range(self.n):
+            for j in range(self.n):
+                self.colored_edges[i].append(0)
+        self.search(v)
+        return self.colored_edges
 
-    def p(self, v):
+    def search(self, v):
         self.t += 1
         self.pe[v] = self.t
-        for w in self.get_open_neighbourhood(v):
+        for w in self.opn_ngbhood(v):
             if self.pe[w] == 0:
+                self.color_edge(v,w, 1)
                 self.parent[w] = v
-                self.add_colored_edge(v,w,'0,0,255')
-                self.p(w)
+                self.search(w)
             elif self.ps[w] == 0 and w != self.parent[v]:
-                self.add_colored_edge(v,w,'255,0,0')
+                self.color_edge(v,w, 2)
         self.t += 1
         self.ps[v] = self.t
 
-    def add_colored_edge(self, v, w, color):
+    def color_edge(self, v, w, color):
         if v < w:
-            self.edges[v].append(ColoredEdge(w, color))
+            self.colored_edges[v][w] = color
         else:
-            self.edges[w].append(ColoredEdge(v, color))
+            self.colored_edges[w][v] = color
 
-    def write_out_file(self):
-        for i in range(self.n):
-            for e in self.edges[i]:
-                print("{},{},false,'{}'".format(i+1, e.to_vertex+1, e.color))
+g = DepthGraph('in/graph_1')
+s = g.depth_search(0)
 
-g = DepthGraph('in/graph_2')
-g.depth_search(0)
+for i in range(len(s)):
+    for j in range(len(s[i])):
+        color_id = s[i][j] 
+        if color_id:
+            print(i+1,j+1,g.color_palette[color_id])
