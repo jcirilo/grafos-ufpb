@@ -16,7 +16,7 @@ class LargeGraph(Graph):
             self.parent.append(None)
             self.colored_edges.append(list())
 
-    def largue_search(self, v):
+    def large_search(self, v):
         self.t = 0
         self.queue.clear()
         for i in range(self.n):
