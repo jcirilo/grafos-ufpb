@@ -53,27 +53,27 @@ class Graph:
                 min = aux
         return min
 
-    def get_degrees(self):
+    def degrees(self):
         sorted = []
         for i in range(self.n):
             sorted.append(self.degree(i))
         sorted.sort()
         return sorted
 
-    def get_open_neighbourhood(self, v):
+    def opn_ngbhood(self, v):
         return self.adj_list[v]
 
-    def get_closed_neighbourhood(self, v):
+    def cls_ngbhood(self, v):
         aux = self.adj_list[v]
         aux.append(v)
         return aux
 
-    def is_adjacent(self, a, b):
+    def is_adj(self, a, b):
         if a | b > self.n:
             return False
         return self.adj_matrix[a][b] == 1
 
-    def get_regularity(self):
+    def regularity(self):
         first_degree = self.degree(0)
         for i in range(1, self.n):
             if first_degree != self.degree(i):
@@ -88,21 +88,21 @@ class Graph:
         current_edges /= 2
         return current_edges == max_edges
 
-    def get_universal_vertex(self):
+    def universal_nodes(self):
         out = list()
         for i in range(self.n):
             if self.degree(i) == self.n-1:
                 out.append(i)
         return out
     
-    def get_isolated_vertex(self):
+    def isolated_nodes(self):
         out = list()
         for i in range(self.n):
             if self.degree(i) == 0:
                 out.append(i)
         return out
     
-    def is_subgraph(self, n, m):
+    def is_sub(self, n, m):
         if len(n) > self.n:
             return False
         for i in n:
@@ -111,13 +111,13 @@ class Graph:
         for v in m:
             if v[0] | v[1] > self.n:
                 return False
-            if not self.is_adjacent(v[0], v[1]):
+            if not self.is_adj(v[0], v[1]):
                 return False
         return True
 
     def is_ride(self, n):
         for i in range(self.n):
-            if not self.is_adjacent(n[i], n[i+1]):
+            if not self.is_adj(n[i], n[i+1]):
                 return False
         return True
     
@@ -144,11 +144,11 @@ class Graph:
     def is_clique(self, n):
         for i in range(self.n-1):
             for j in range(i+1, self.n):
-                if self.is_adjacent(n[i], n[j]):
+                if self.is_adj(n[i], n[j]):
                     return False
         return True
     
-    def get_complement(self, g):
+    def complement(self, g):
         data = list()
         for i in range(self.n):
             data.append(list())
@@ -157,4 +157,4 @@ class Graph:
         return Graph(data=data)
 
     def is_independent(self, n):
-        return self.get_complement().g.is_cicle(n)
+        return self.complement().g.is_cicle(n)
