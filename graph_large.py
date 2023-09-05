@@ -30,10 +30,10 @@ class LargeGraph(Graph):
             self.l[v] = self.t
             self.node_level[v] = 0
             self.queue.append(v)
-            self.search()
+            self.__search__()
         return self.colored_edges
 
-    def search(self):
+    def __search__(self):
         while len(self.queue) != 0:
             v = self.queue.pop(0)
             for w in self.opn_ngbhood(v):

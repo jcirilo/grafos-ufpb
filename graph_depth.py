@@ -26,10 +26,10 @@ class DepthGraph(Graph):
         for i in range(self.n):
             for j in range(self.n):
                 self.colored_edges[i].append(0)
-        self.search(v)
+        self.__search__(v)
         return self.colored_edges
 
-    def search(self, v):
+    def __search__(self, v):
         self.t += 1
         self.pe[v] = self.t
         for w in self.opn_ngbhood(v):
