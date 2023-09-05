@@ -36,7 +36,7 @@ class GraphDepth(Graph):
             if self.pe[w] == 0:
                 self.color_edge(v,w, 1)
                 self.parent[w] = v
-                self.search(w)
+                self.__depth_search__(w)
             elif self.ps[w] == 0 and w != self.parent[v]:
                 self.color_edge(v,w, 2)
         self.t += 1
