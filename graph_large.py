@@ -15,13 +15,16 @@ class GraphLarge(Graph):
             self.node_level.append(0)
             self.parent.append(None)
             self.colored_edges.append(list())
+        for i in range(self.n):
+            for j in range(self.n):
+                self.colored_edges[i].append(0)
 
     def search(self, v):
         self.t = 0
         self.queue.clear()
         for i in range(self.n):
             for j in range(self.n):
-                self.colored_edges[i].append(0)
+                self.colored_edges[i][j] = 0
         for i in range(self.n):
             self.parent[i] = None
             self.l[i] = 0

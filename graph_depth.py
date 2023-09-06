@@ -16,6 +16,9 @@ class GraphDepth(Graph):
             self.ps.append(0)
             self.parent.append(None)
             self.colored_edges.append(list())
+        for i in range(self.n):
+            for j in range(self.n):
+                self.colored_edges[i].append(0)
 
     def search(self, v):
         self.t = 0
@@ -25,7 +28,7 @@ class GraphDepth(Graph):
             self.parent[i] = None
         for i in range(self.n):
             for j in range(self.n):
-                self.colored_edges[i].append(0)
+                self.colored_edges[i][j] = 0
         self.__depth_search__(v)
         return self.colored_edges
 
