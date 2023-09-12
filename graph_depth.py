@@ -1,5 +1,4 @@
 from graph import Graph
-from os.path import join
 
 # Grafo com busca em profundidade
 class GraphDepth(Graph):
@@ -9,7 +8,6 @@ class GraphDepth(Graph):
         self.pe = list()
         self.ps = list()
         self.parent = list()
-        self.color_palette = ['0,0,0', '0,0,255', '255,0,0', '0,255,0', '255,255,0']
         self.colored_edges = list()
         for i in range(self.n):
             self.pe.append(0)
