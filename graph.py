@@ -1,15 +1,34 @@
 from re import finditer 
 
-# Grafo com funções básicas
+# grafo com busca em largura e profundidade (bfs e dfs)
 class Graph:
     def __init__(self, path=None, data=None):
+        # grafo
         self.n = 0
         self.adj_matrix = list()
         self.adj_list = list()
+        # buscas
+        self.t = 0                  # bfs/dfs
+        self.in_t = list()          # bfs/dfs
+        self.out_t = list()         # dfs
+        self.parent = list()        # bfs/dfs
+        self.colored_edges = list() # bfs/dfs
+        self.node_lvl = list()      # bfs
+        # ler e carrega os dados do grafo
         if path:
             self.load_file(path)
         elif data:
             self.load_data(data)
+        # inicializa as listas de busca
+        for i in range(self.n):
+            self.in_t.append(0)
+            self.out_t.append(0)
+            self.parent.append(None)
+            self.node_lvl.append(None)
+            self.colored_edges.append(list())
+        for i in range(self.n):
+            for j in range(self.n):
+                self.colored_edges[i].append(0)
 
     def load_data(self, data):
         self.n = len(data[0])
@@ -158,3 +177,89 @@ class Graph:
 
     def is_independent(self, n):
         return self.complement().g.is_cicle(n)
+
+    def node_eccentricity(self, v):
+        self.breadth_search(v, only_lvl=True)
+        eccentricity = max(self.node_lvl)
+        return eccentricity
+    
+    def eccentricity_list(self):
+        e_list = list()
+        for v in range(self.n):
+            e_list.append(self.node_eccentricity(v))
+        return e_list
+
+    def radius(self):
+        return min(self.eccentricity_list())
+    
+    def diameter(self):
+        return max(self.eccentricity_list())
+
+    def depth_search(self, v):
+        self.t = 0
+        for i in range(self.n):
+            self.in_t[i] = 0
+            self.out_t[i] = 0
+            self.parent[i] = None
+        for i in range(self.n):
+            for j in range(self.n):
+                self.colored_edges[i][j] = 0
+        self.__depth_search__(v)
+        return self.colored_edges
+
+    def breadth_search(self, v, only_lvl=False):
+        self.t = 0
+        queue = list()
+        if not only_lvl:
+            for i in range(self.n):
+                for j in range(self.n):
+                    self.colored_edges[i][j] = 0
+        for i in range(self.n):
+            self.in_t[i] = 0
+            self.parent[i] = 0
+            self.node_lvl[i] = None
+        while 0 in self.in_t:
+            self.t += 1
+            self.in_t[v] = self.t
+            self.node_lvl[v] = 0
+            queue.append(v)
+            self.__breadth_search__(queue, only_lvl)
+        return self.colored_edges
+
+    def __breadth_search__(self, queue, only_lvl):
+        while queue:
+            v = queue.pop(0)
+            for w in self.opn_ngbhood(v):
+                if self.in_t[w] == 0:
+                    if not only_lvl: self.__color_edge__(v,w, color_code=1)
+                    self.parent[w] = v
+                    self.node_lvl[w] = self.node_lvl[v]+1
+                    self.t += 1
+                    self.in_t[w] = self.t
+                    queue.append(w)
+                elif not only_lvl and self.node_lvl[w] == self.node_lvl[v]:
+                    if self.parent[w] == self.parent[v]:
+                        self.__color_edge__(v,w, color_code=2)
+                    else:
+                        self.__color_edge__(v,w, color_code=3)
+                elif not only_lvl and self.node_lvl[w] == self.node_lvl[v]+1:
+                    self.__color_edge__(v,w, color_code=4)
+
+    def __depth_search__(self, v):
+        self.t += 1
+        self.in_t[v] = self.t
+        for w in self.opn_ngbhood(v):
+            if self.in_t[w] == 0:
+                self.__color_edge__(v,w, color_code=1)
+                self.parent[w] = v
+                self.__depth_search__(w)
+            elif self.out_t[w] == 0 and w != self.parent[v]:
+                self.__color_edge__(v,w, color_code=2)
+        self.t += 1
+        self.out_t[v] = self.t
+
+    def __color_edge__(self, v, w, color_code):
+        if w < v:
+            self.colored_edges[w][v] = color_code
+            return
+        self.colored_edges[v][w] = color_code
