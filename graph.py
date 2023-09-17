@@ -195,6 +195,10 @@ class Graph:
     def diameter(self):
         return max(self.eccentricity_list())
 
+    def dist(self, v, w):
+        self.breadth_search(v)
+        return self.node_lvl[w]
+
     def depth_search(self, v):
         self.t = 0
         for i in range(self.n):
