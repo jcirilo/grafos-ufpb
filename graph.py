@@ -3,32 +3,14 @@ from re import finditer
 # grafo com busca em largura e profundidade (bfs e dfs)
 class Graph:
     def __init__(self, path=None, data=None):
-        # grafo
         self.n = 0
         self.adj_matrix = list()
         self.adj_list = list()
-        # buscas
-        self.t = 0                  # bfs/dfs
-        self.in_t = list()          # bfs/dfs
-        self.out_t = list()         # dfs
-        self.parent = list()        # bfs/dfs
-        self.colored_edges = list() # bfs/dfs
-        self.node_lvl = list()      # bfs
-        # ler e carrega os dados do grafo
+        self.t = 0
         if path:
             self.load_file(path)
         elif data:
             self.load_data(data)
-        # inicializa as listas de busca
-        for i in range(self.n):
-            self.in_t.append(0)
-            self.out_t.append(0)
-            self.parent.append(None)
-            self.node_lvl.append(None)
-            self.colored_edges.append(list())
-        for i in range(self.n):
-            for j in range(self.n):
-                self.colored_edges[i].append(0)
 
     def load_data(self, data):
         self.n = len(data[0])
@@ -73,18 +55,17 @@ class Graph:
         return min
 
     def degrees(self):
-        sorted = []
+        l = list()
         for i in range(self.n):
-            sorted.append(self.degree(i))
-        sorted.sort()
-        return sorted
+            l.append(self.degree(i))
+        return sorted(l)
 
     def opn_ngbhood(self, v):
         return self.adj_list[v]
 
     def cls_ngbhood(self, v):
         aux = self.adj_list[v]
-        aux.append(v)
+        aux.insert(v, v)
         return aux
 
     def is_adj(self, a, b):
@@ -179,8 +160,8 @@ class Graph:
         return self.complement().g.is_cicle(n)
 
     def node_eccentricity(self, v):
-        self.breadth_search(v, only_lvl=True)
-        eccentricity = max(self.node_lvl)
+        node_lvl = self.search_bfs(v, get_lvl=True)
+        eccentricity = max(node_lvl)
         return eccentricity
     
     def eccentricity_list(self):
@@ -196,74 +177,71 @@ class Graph:
         return max(self.eccentricity_list())
 
     def dist(self, v, w):
-        self.breadth_search(v)
-        return self.node_lvl[w]
+        node_lvl = self.search_bfs(v, get_lvl=True)
+        return node_lvl[w]
 
-    def depth_search(self, v):
-        self.t = 0
-        for i in range(self.n):
-            self.in_t[i] = 0
-            self.out_t[i] = 0
-            self.parent[i] = None
-        for i in range(self.n):
-            for j in range(self.n):
-                self.colored_edges[i][j] = 0
-        self.__depth_search__(v)
-        return self.colored_edges
-
-    def breadth_search(self, v, only_lvl=False):
-        self.t = 0
+    def search_bfs(self, v, get_lvl=False):
+        t = 0
         queue = list()
-        if not only_lvl:
-            for i in range(self.n):
-                for j in range(self.n):
-                    self.colored_edges[i][j] = 0
-        for i in range(self.n):
-            self.in_t[i] = 0
-            self.parent[i] = 0
-            self.node_lvl[i] = None
-        while 0 in self.in_t:
-            self.t += 1
-            self.in_t[v] = self.t
-            self.node_lvl[v] = 0
+        colors = list()
+        for c in range(self.n):
+            colors.append([None]*self.n)
+        entry_t = [0]*self.n
+        parent = [0]*self.n
+        node_lvl = [None]*self.n
+        while 0 in entry_t:
+            t += 1
+            entry_t[v] = t
+            node_lvl[v] = 0
             queue.append(v)
-            self.__breadth_search__(queue, only_lvl)
-        return self.colored_edges
+            while queue:
+                v = queue.pop(0)
+                for w in self.opn_ngbhood(v):
+                    if entry_t[w] == 0:
+                        color = self.color_edge(colors,v,w,"'0,0,255'")
+                        parent[w] = v
+                        node_lvl[w] = node_lvl[v]+1
+                        t += 1
+                        entry_t[w] = t
+                        queue.append(w)
+                    elif node_lvl[w] == node_lvl[v]:
+                        if parent[w] == parent[v]:
+                            color = self.color_edge(colors,v,w,"'255,0,0'")
+                        else:
+                            color = self.color_edge(colors,v,w,"'255,255,0'")
+                    elif node_lvl[w] == node_lvl[v]+1:
+                        color = self.color_edge(colors,v,w,"'0,255,0'")
+        if get_lvl:
+            return node_lvl
+        return colors
 
-    def __breadth_search__(self, queue, only_lvl):
-        while queue:
-            v = queue.pop(0)
-            for w in self.opn_ngbhood(v):
-                if self.in_t[w] == 0:
-                    if not only_lvl: self.__color_edge__(v,w, color_code=1)
-                    self.parent[w] = v
-                    self.node_lvl[w] = self.node_lvl[v]+1
-                    self.t += 1
-                    self.in_t[w] = self.t
-                    queue.append(w)
-                elif not only_lvl and self.node_lvl[w] == self.node_lvl[v]:
-                    if self.parent[w] == self.parent[v]:
-                        self.__color_edge__(v,w, color_code=2)
-                    else:
-                        self.__color_edge__(v,w, color_code=3)
-                elif not only_lvl and self.node_lvl[w] == self.node_lvl[v]+1:
-                    self.__color_edge__(v,w, color_code=4)
-
-    def __depth_search__(self, v):
+    def search_dfs(self, v):
+        self.t = 0
+        pe = [0]*self.n
+        ps = [0]*self.n
+        parent = [None]*self.n
+        colors = list()
+        for c in range(self.n):
+            colors.append([None]*self.n)
+        self.__depth_search__(v, pe, ps, parent, colors)
+        return colors
+    
+    def __depth_search__(self, v, pe, ps, parent, colors):
         self.t += 1
-        self.in_t[v] = self.t
+        pe[v] = self.t
         for w in self.opn_ngbhood(v):
-            if self.in_t[w] == 0:
-                self.__color_edge__(v,w, color_code=1)
-                self.parent[w] = v
-                self.__depth_search__(w)
-            elif self.out_t[w] == 0 and w != self.parent[v]:
-                self.__color_edge__(v,w, color_code=2)
+            if pe[w] == 0:
+                colors = self.color_edge(colors,v,w,"'0,0,255'")
+                parent[w] = v
+                self.__depth_search__(w, pe, ps, parent, colors)
+            elif ps[w] == 0 and w != parent[v]:
+                colors = self.color_edge(colors,v,w,"'255,0,0'")
         self.t += 1
-        self.out_t[v] = self.t
+        ps[v] = self.t
 
-    def __color_edge__(self, v, w, color_code):
-        if w < v:
-            self.colored_edges[w][v] = color_code
-            return
-        self.colored_edges[v][w] = color_code
+    def color_edge(self, m, v, w, color):
+        if v < w:
+            m[v][w] = color
+        else:
+            m[w][v] = color
+        return m
