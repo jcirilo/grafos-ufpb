@@ -137,7 +137,7 @@ class Graph:
             return False
         for i in range(self.n-1):
             for j in range(i+1, self.n-1):
-                if n[k] == n[j]:
+                if n[i] == n[j]:
                     return False
         return True
 
