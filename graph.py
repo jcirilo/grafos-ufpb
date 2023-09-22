@@ -159,8 +159,12 @@ class Graph:
     def is_independent(self, n):
         return self.complement().g.is_cicle(n)
 
+    def dist(self, v, w):
+        node_lvl = self.search_bfs(v)
+        return node_lvl[w]
+
     def node_eccentricity(self, v):
-        node_lvl = self.search_bfs(v, get_lvl=True)
+        node_lvl = self.search_bfs(v)
         eccentricity = max(node_lvl)
         return eccentricity
     
@@ -176,19 +180,26 @@ class Graph:
     def diameter(self):
         return max(self.eccentricity_list())
 
-    def dist(self, v, w):
-        node_lvl = self.search_bfs(v, get_lvl=True)
-        return node_lvl[w]
+    def apl(self): #average path length
+        sum1 = 0
+        sum2 = 0
+        for v in range(self.n):
+            for lvl in self.search_bfs(v):
+                sum1 += lvl
+            sum1 /= self.n-1
+            sum2 += sum1
+            sum1 = 0
+        return sum2/self.n
 
-    def search_bfs(self, v, get_lvl=False):
+    def search_bfs(self, v, get_colors=False):
         t = 0
         queue = list()
-        colors = list()
-        for c in range(self.n):
-            colors.append([None]*self.n)
         entry_t = [0]*self.n
         parent = [0]*self.n
         node_lvl = [None]*self.n
+        colors = list()
+        for c in range(self.n):
+            colors.append([None]*self.n)
         while 0 in entry_t:
             t += 1
             entry_t[v] = t
@@ -198,7 +209,7 @@ class Graph:
                 v = queue.pop(0)
                 for w in self.opn_ngbhood(v):
                     if entry_t[w] == 0:
-                        color = self.color_edge(colors,v,w,"'0,0,255'")
+                        colors = self.color_edge(colors,v,w,"'0,0,255'")
                         parent[w] = v
                         node_lvl[w] = node_lvl[v]+1
                         t += 1
@@ -206,14 +217,14 @@ class Graph:
                         queue.append(w)
                     elif node_lvl[w] == node_lvl[v]:
                         if parent[w] == parent[v]:
-                            color = self.color_edge(colors,v,w,"'255,0,0'")
+                            colors = self.color_edge(colors,v,w,"'255,0,0'")
                         else:
-                            color = self.color_edge(colors,v,w,"'255,255,0'")
+                            colors = self.color_edge(colors,v,w,"'255,255,0'")
                     elif node_lvl[w] == node_lvl[v]+1:
-                        color = self.color_edge(colors,v,w,"'0,255,0'")
-        if get_lvl:
-            return node_lvl
-        return colors
+                        colors = self.color_edge(colors,v,w,"'0,255,0'")
+        if get_colors:
+            return colors
+        return node_lvl
 
     def search_dfs(self, v):
         self.t = 0
