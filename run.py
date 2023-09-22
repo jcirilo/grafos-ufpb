@@ -1,6 +1,6 @@
 from graph import Graph
 
-def write_out_file(colors, path):
+def write_out_file(path, colors):
     n = len(colors)
     f = open(file=path, mode='w', encoding='utf-8')
     f.write("nodedef>name VARCHAR,label VARCHAR\n")
@@ -15,11 +15,12 @@ def write_out_file(colors, path):
 
 def run():
     for i in range(1, 21):
-        path = f"in/graph_{i}"
+        path = f"in/p2/graph_{i}"
         g = Graph(path)
-        dfs = g.search_dfs(0)
-        bfs = g.search_bfs(0)
-        write_out_file(colors=dfs, path=f"out/graph_{i}_dfs.gdf")
-        write_out_file(colors=bfs, path=f"out/graph_{i}_bfs.gdf")
+        print("grafo %2d, diametro: %d, raio: %d, dmed: %1.16f" % (i, g.diameter(), g.radius(), g.apl()))
+        #dfs = g.search_dfs(0)
+        #bfs = g.search_bfs(0)
+        #write_out_file(path=f"out/p2/graph_{i}_dfs.gdf", colors=dfs)
+        #write_out_file(path=f"out/p2/graph_{i}_bfs.gdf", colors=bfs)
 
 run()
