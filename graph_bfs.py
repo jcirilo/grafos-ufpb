@@ -7,12 +7,12 @@ class GraphBFS(Graph):
     def search_bfs(self, v, get_colors=False):
         t = 0
         queue = list()
-        entry_t = [0]*self.n
-        parent = [0]*self.n
-        node_lvl = [None]*self.n
+        entry_t = [0]*self._n
+        parent = [0]*self._n
+        node_lvl = [None]*self._n
         colors = list()
-        for c in range(self.n):
-            colors.append([None]*self.n)
+        for c in range(self._n):
+            colors.append([None]*self._n)
         while 0 in entry_t:
             t += 1
             entry_t[v] = t
@@ -20,7 +20,7 @@ class GraphBFS(Graph):
             queue.append(v)
             while queue:
                 v = queue.pop(0)
-                for w in self.opn_ngbhood(v):
+                for w in self.get_o_ngbhood(v):
                     if entry_t[w] == 0:
                         colors = self.color_edge(colors,v,w,"'0,0,255'")
                         parent[w] = v
