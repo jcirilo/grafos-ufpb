@@ -12,8 +12,15 @@ class Graph:
         elif data:
             self.__load_data__(data)
     
-    def get_n(self):
+    def get_n(self) -> int:
         return self._n
+ 
+    def get_edges(self) -> list:
+        edges = list()
+        for i in range(self.get_n()):
+            for j in range(i, self.get_n()):
+                edges.append([i,j]) if self.is_adj(i,j) else None
+        return edges
 
     def get_adj_m(self):
         return self._adj_matrix
@@ -116,7 +123,7 @@ class Graph:
         return sum2/self._n
 
     def is_adj(self, a, b):
-        if a | b > self._n:
+        if (a > self._n) or (b > self._n):
             return False
         return self._adj_matrix[a][b] == 1
 
