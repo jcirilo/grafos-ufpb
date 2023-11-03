@@ -1,4 +1,4 @@
-from graph import Graph
+from graph.graph import Graph
 
 class GraphDFS(Graph):
     def __init__(self, path=None, data=None):
